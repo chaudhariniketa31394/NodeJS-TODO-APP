@@ -27,6 +27,7 @@ app.use('/remove', require('./routes/remove'));
 app.use('/edit', require('./routes/edit'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/index'));
+app.use('/get', require('./routes/tasks.js'));
 
 // functions for persistant sessions
 passport.serializeUser(function (user_id, done) { done(null, user_id); });

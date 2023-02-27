@@ -1,9 +1,19 @@
 const mongoose = require('mongoose');
 
 const todoSchema = new mongoose.Schema({
-  todo: String,
-  check: Boolean,
-  username: String
+  todo: {
+    type: String,
+    required: true 
+  },
+  status: ['Pending', 'InProgress', 'Completed'],
+  username:  {
+    type: String,
+    required: true 
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "Account"
+  }
 });
 
 module.exports = mongoose.model('Todo', todoSchema);
