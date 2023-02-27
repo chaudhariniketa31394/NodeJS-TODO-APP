@@ -5,10 +5,10 @@ let Todo = require("../models/todo");
 
 // route for when the user views the index of the website
 router.get("/", authenticateUser(), function(req, res) {
-  Todo.find({ username: req.session.user }, function(err, result) {
+  Todo.find({ email: req.session.user }, function(err, result) {
     if (err) throw err;
 
-    res.render("index", { todos: result, username: req.session.user });
+    res.render("index", { todos: result, email: req.session.user });
   });
 });
 

@@ -5,14 +5,14 @@ const todoSchema = new mongoose.Schema({
     type: String,
     required: true 
   },
-  status: ['Pending', 'InProgress', 'Completed'],
-  username:  {
+  status: ['Completed', 'Incomplete'],
+  email:  {
     type: String,
     required: true 
   },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "Account"
+  date:{
+    type: Date,
+    required : true
   }
 });
 

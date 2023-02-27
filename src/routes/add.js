@@ -1,23 +1,40 @@
 const express = require("express");
 const router = express.Router();
+const isLogged = require("../utils/validator");
+const passport = require("passport")
+router.use(isLogged);
+
 
 let Todo = require("../models/todo");
 
 // route for when submits new todo item
-router.post('/todo', function (req, res) {
+
+
+router.post('/todo', passport.authenticate('session'),async function (req, res) {
+    console.log("req.session.user,",req.session)
     // create todo model with data passed from request and save to databse
-
-    Todo({
+try {
+    const doc = await Todo.create({
         todo: req.body.todo,
-        check: req.body.check,
-        username: req.session.user
-    }).save(function (err, doc) {
-        if (err) throw err;
-        console.log("item saved!");
-
-        // send response back with the document object that was created
-        res.send(doc);
+        status: req.body.status,
+        email: req.session.user,
+        date: new Date()
     });
+    return res.status(201).json({
+        success: true,
+        message: 'Todo created successful',
+        data: doc
+    })
+} catch (error) {
+    console.log("error",error)
+    return res.status(500).send({
+        success: false,
+        message: 'Something went wrong'
+       
+    })
+}
+
+
 });
 
 module.exports = router;

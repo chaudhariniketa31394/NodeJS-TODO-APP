@@ -7,10 +7,13 @@ let Todo = require("../models/todo");
 router.delete('/todo/:id', function (req, res) {
     // remove the document in the database that matches the id.
     Todo.find({ _id: req.params.id }).remove(function (err, doc) {
-        if (err) throw err;
+        if (err) return res.status(500).send({success: true, message: 'something went wrong'});
 
         // send response back with the document object that was deleted
-        res.send(doc);
+        return res.status(200).json({
+            success: true,
+            message: 'Deleted successfully'
+        })
     });
 });
 
