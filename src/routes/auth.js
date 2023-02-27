@@ -74,6 +74,7 @@ router.post("/login", async function (req, res) {
     if (doc) {
       if(doc.otp === req.body.otp){ req.login(doc._id,(err,result)=>
         { console.log("errerrerrr",err)
+        console.log("errerreresult)rrr",result)
           if(err) 
         {
           
