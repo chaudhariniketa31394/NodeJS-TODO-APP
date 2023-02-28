@@ -93,8 +93,12 @@ router.post("/login", async function (req, res) {
               }
             )
             await Account.updateOne({_id: doc._id }, { $set:{token: token} },{new:true}); 
-        
-            return res.status(200).json({success:true,data:{token:token,userId:doc._id,email:doc.email}})
+            req.login(doc.email,function(err,result) {
+              if (err) return res.status(400).send("not able to set session");
+              req.session.user = doc.email
+              return res.status(200).json({success:true,data:{token:token,userId:doc._id,email:doc.email}})
+            })
+           
           } else return res.status(404).json({ success: false, message: 'otp is wrong' })          
      }
     return res.status(404).json({success:false,message:"user not found"})
