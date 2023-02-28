@@ -11,7 +11,7 @@ console.log("ssssssssinside auth route")
 // route for when user logs out, session is destroyed and user redirected to login
 router.get("/logout", function (req, res) {
   req.session.destroy();
-  return res.status(200).json({ success: true, message: "not able to set session" });
+  return res.status(200).json({ success: true, message: "logout successfully"});
   //res.redirect("/login");
 });
 
