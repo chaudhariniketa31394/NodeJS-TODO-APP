@@ -74,7 +74,7 @@ router.post("/login", async function (req, res) {
   try {
     if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
     if(!req.body.password) return res.status(404).json({success:false,message:"password required"});
-    if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
+    //if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
     req.body.email = req.body.email.toLowerCase();
     // req.body.password = req.body.password.toLowerCase();
     

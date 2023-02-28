@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-const oneDay = 1000 * 60;
+const oneDay = 300000;
 //const oneDay = 1000 * 60 * 60 * 24;
 //session middleware
 app.use(require('express-session')({

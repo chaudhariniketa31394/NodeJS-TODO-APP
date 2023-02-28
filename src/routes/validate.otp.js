@@ -9,7 +9,7 @@ router.post('/validate', async function (req, res) {
   try {
     if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
     if(!req.body.otp) return res.status(404).json({success:false,message:"otp required"});
-   if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
+   //if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
     const doc = await Account.findOne({ email: req.body.email })
     if (doc) {
       if(doc.otp === req.body.otp) {
