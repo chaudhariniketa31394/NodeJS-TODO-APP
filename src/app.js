@@ -16,24 +16,18 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true, cookie: { secure: true } }));
+const oneDay = 1000 * 60;
+//const oneDay = 1000 * 60 * 60 * 24;
+//session middleware
+app.use(require('express-session')({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+//app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false, cookie: { secure: true } }));
 app.use(passport.initialize());
 app.use(passport.session());
-passport.serializeUser(function(user, cb) {
-  process.nextTick(function() {
-    return cb(null, {
-      id: user.id,
-      username: user.username
-    
-    });
-  });
-});
-
-passport.deserializeUser(function(user, cb) {
-  process.nextTick(function() {
-    return cb(null, user);
-  });
-});
 app.use(passport.authenticate('session'));
 // express routes that exist
 app.get('/', (req,res) => res.status(200).send("welcome to the todo app"));
@@ -42,9 +36,9 @@ app.use('/remove', require('./routes/remove'));
 app.use('/edit', require('./routes/edit'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/index'));
-app.use('/get', require('./routes/tasks.js'));
-app.use('/otp', require('./routes/send.otp.js'));
-
+app.use('/get', require('./routes/tasks'));
+app.use('/otp', require('./routes/validate.otp'));
+app.use('/sort', require('./routes/sort.task'));
 // functions for persistant sessions
 passport.serializeUser(function (user_id, done) { done(null, user_id); });
 passport.deserializeUser(function (user_id, done) { done(null, user_id); });

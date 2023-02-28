@@ -5,7 +5,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 let Account = require("../models/account");
 const {JWT_SECRETE} = require("../configs/database")
-
+const {sendMail}  = require("../utils/email")
 console.log("ssssssssinside auth route")
 
 // route for when user logs out, session is destroyed and user redirected to login
@@ -25,26 +25,31 @@ router.get("/register", function (req, res) {
 
 
 router.post("/register", validateRegister(), async function (req, res) {
-  console.log("request.body", req.body)
-  try {
+   try {
    // const hash = await bcrypt.hash(req.body.password, 10)
     const user = await Account.findOne({ email: req.body.email })
-    console.log("user",user)
-    if (user) return res.status(202).send("email already exist");
-
+    if (user) return res.status(202).json({success:false,message:"email already exist"});
+    const salt = await bcrypt.genSalt(10);
+    console.log("salt",salt)
+   const encPassword = await bcrypt.hash(req.body.password, salt)
+   console.log("encPassword ",encPassword )
     const doc = await Account.create({
-      email: req.body.email
+      email: req.body.email,
+      password : encPassword,
+      otp:(Math.floor(100000 + Math.random() * 900000)),
+      isActive:false
     })
-    console.log("docc",doc)
-    req.login(doc._id, function(err) {
-      if (err) throw err;
-      req.session.user = req.body.email})
-    return res.status(201).json({
-      success:true,
-      data:doc,
-      Message:"User Created Successfully"})
-
-
+    // await sendMail({OTP:doc.otp, to: doc.email, subject:"OTP For Login"}).catch((error) =>{ return res.status(500).json({  success: false,
+    //   message: 'Something went wrong'})})
+    req.login(doc.email,function(err,result) {
+      if (err) return res.status(400).send("not able to set session");;
+      req.session.user = req.body.email
+      return res.status(201).json({
+        success:true,
+        data:{email:doc.email,isActive:doc.isActive,Id:doc._id},
+        Message:"User registation Successfully, please check otp sent on register email" })
+    })
+   
   } catch (error) {
     console.log("error",error)
     res.status(500).send("Something went wrong")
@@ -68,55 +73,38 @@ router.post("/login", async function (req, res) {
     console.log("req.isAuthenticated()",req.isAuthenticated())
     console.log("JWT_SECRETE",JWT_SECRETE)
     // make input not case sensitive
+    if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
     req.body.email = req.body.email.toLowerCase();
     // req.body.password = req.body.password.toLowerCase();
+    
     const doc = await Account.findOne({ email: req.body.email })
     if (doc) {
-      if(doc.otp === req.body.otp){ req.login(doc._id,(err,result)=>
-        { console.log("errerrerrr",err)
-        console.log("errerreresult)rrr",result)
-          if(err) 
-        {
-          
-        }
-         })
-      req.session.user = req.body.email;
-      console.log("req.session.",req.session)
-                  const token = jwt.sign(
-                  { _id: doc._id, email: doc.email},
-                  JWT_SECRETE,
-                  {
-                    expiresIn: "1h",
-                  }
-                )
-      
-        await Account.updateOne({_id: doc._id }, { $set:{token: token} },{new:true}); 
-    
-      return res.status(200).send({token:token,userId:doc._id,email:doc.email})
-    } else{return res.status(404).json({
-        success: false,
-        message: 'otp is wrong'
-    })}
-    //  const result = await bcrypt.compare(req.body.password, doc.password);
-    //   if (result == true) {
-       
-     // }
-
-     // return res.status(404).send("password does not match")
-    }
-    return res.status(404).send("user not found")
+            if(!doc.isActive) return res.status(404).json({ success: false, message: 'user is not activated yet' }) 
+          const isPasswordVerified = await bcrypt.compare(req.body.password, doc.password);
+          if(isPasswordVerified){
+            const token = jwt.sign(
+              { _id: doc._id, email: doc.email},
+              JWT_SECRETE,
+              {
+                expiresIn: "1h",
+              }
+            )
+            await Account.updateOne({_id: doc._id }, { $set:{token: token} },{new:true}); 
+        
+            return res.status(200).json({success:true,data:{token:token,userId:doc._id,email:doc.email}})
+          } else return res.status(404).json({ success: false, message: 'otp is wrong' })          
+     }
+    return res.status(404).json({success:false,message:"user not found"})
   } catch (error) {
     console.log("eroorrrr",error)
     return res.status(500).send("something went wrong")
   }
-
 });
 
 // middleware which makes input lowercase and checks if it is valid.
 function validateRegister() {
   return function (req, res, next) {
-    // make input not case sensitive
-
+        // make input not case sensitive
     req.body.email = req.body.email.toLowerCase();
     //req.body.password = req.body.password.toLowerCase();
     console.log("req.body.email", validator.isEmail(req.body.email))

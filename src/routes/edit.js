@@ -6,9 +6,9 @@ let Todo = require("../models/todo");
 
 // route for when user edits a todo item
 router.put('/todo/:id', async function (req, res) {
-
     try {
-        const result = await Todo.updateOne({ _id: req.params.id }, req.body);
+        if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
+        const result = await Todo.updateOne({ _id: req.params.id }, req.body,{new:true});
         console.log("result", result)
         if (result) return res.status(200).json({
             success: true,

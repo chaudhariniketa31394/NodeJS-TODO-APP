@@ -10,16 +10,19 @@ let Todo = require("../models/todo");
 // route for when submits new todo item
 
 
-router.post('/todo', passport.authenticate('session'),async function (req, res) {
-    console.log("req.session.user,",req.session)
+router.post('/todo',async function (req, res) {
+    if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
+   //   console.log("req.session.user,",req.session)
     // create todo model with data passed from request and save to databse
+    console.log("decode",req.decoded)
 try {
     const doc = await Todo.create({
         todo: req.body.todo,
         status: req.body.status,
-        email: req.session.user,
-        date: new Date()
+        user: req.decoded.email,
+        date: req.body.date 
     });
+    console.log("docsss",doc)
     return res.status(201).json({
         success: true,
         message: 'Todo created successful',
@@ -29,8 +32,8 @@ try {
     console.log("error",error)
     return res.status(500).send({
         success: false,
-        message: 'Something went wrong'
-       
+        message: 'Something went wrong',
+        error:error
     })
 }
 

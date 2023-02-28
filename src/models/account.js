@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const accountSchema = new mongoose.Schema({
     email: {
         type: String,
-        unique: true,
         required: true 
     },
     otp: {
@@ -12,6 +11,12 @@ const accountSchema = new mongoose.Schema({
     token: {
         type: String,
     },
+    isActive: {
+        type:Boolean,
+        default:false
+    },
+    password:String
+
 });
 
 module.exports = mongoose.model('Account', accountSchema);

@@ -13,8 +13,8 @@ function isLogged(req, res, next) {
       console.log("JWT_SECRETE",JWT_SECRETE)
       jwt.verify(token, JWT_SECRETE, function(err, decoded) {      
         if (err) {
-          res.status(400);
-          return res.json({ success: false, message: 'Failed to authenticate token.' });    
+          res.status(401);
+          return res.json({ success: false, message: 'Failed to authenticate user.' });    
         } else {
           // if everything is good, save to request for use in other routes
           req.decoded = decoded;    

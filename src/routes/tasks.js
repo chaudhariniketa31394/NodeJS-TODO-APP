@@ -6,6 +6,7 @@ let Todo = require("../models/todo");
 // route for when submits new todo item
 router.post('/todos', async function (req, res) {
     // create todo model with data passed from request and save to databse
+    if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
     const {sort} = req.body
     const limit = parseInt(req.body.limit) || 2;
     const skip = (parseInt(req.body.pageNumber)  > 0) ? limit * (parseInt(req.body.pageNumber) - 1) : 0;       
