@@ -27,6 +27,8 @@ router.get("/register", function (req, res) {
 router.post("/register", validateRegister(), async function (req, res) {
    try {
    // const hash = await bcrypt.hash(req.body.password, 10)
+    if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
+    if(!req.body.password) return res.status(404).json({success:false,message:"password required"});
     const user = await Account.findOne({ email: req.body.email })
     if (user) return res.status(202).json({success:false,message:"email already exist"});
     const salt = await bcrypt.genSalt(10);
@@ -39,8 +41,8 @@ router.post("/register", validateRegister(), async function (req, res) {
       otp:(Math.floor(100000 + Math.random() * 900000)),
       isActive:false
     })
-    // await sendMail({OTP:doc.otp, to: doc.email, subject:"OTP For Login"}).catch((error) =>{ return res.status(500).json({  success: false,
-    //   message: 'Something went wrong'})})
+    await sendMail({OTP:doc.otp, to: doc.email, subject:"OTP For Login"}).catch((error) =>{ return res.status(500).json({  success: false,
+      message: 'Something went wrong'})})
     req.login(doc.email,function(err,result) {
       if (err) return res.status(400).send("not able to set session");;
       req.session.user = req.body.email
@@ -69,10 +71,8 @@ router.get("/login", function (req, res) {
 // route for when user submits login details
 router.post("/login", async function (req, res) {
   try {
-    console.log("session",req.session)
-    console.log("req.isAuthenticated()",req.isAuthenticated())
-    console.log("JWT_SECRETE",JWT_SECRETE)
-    // make input not case sensitive
+    if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
+    if(!req.body.password) return res.status(404).json({success:false,message:"password required"});
     if(!req.isAuthenticated()) return res.status(400).json({success:false,message:"session timeout"})
     req.body.email = req.body.email.toLowerCase();
     // req.body.password = req.body.password.toLowerCase();
