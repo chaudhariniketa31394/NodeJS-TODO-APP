@@ -29,9 +29,9 @@ router.post("/register", async function (req, res) {
    try {
    // const hash = await bcrypt.hash(req.body.password, 10) /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/
     if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
-    if(!req.body.email.match(emailRegex)) return res.status(404).json({success:false,message:"invalid mail"});
+    if(!(req.body.email.match(emailRegex))) return res.status(404).json({success:false,message:"invalid emailId"});
     if(!req.body.password) return res.status(404).json({success:false,message:"password required"});
-    if(!req.body.password.match(passwordRegex)) return res.status(404).json({success:false,message:"invalid password,8 letter password, with at least a symbol, upper and lower case letters and a number"});
+    if(!(req.body.password.match(passwordRegex))) return res.status(404).json({success:false,message:"invalid password,8 letter password, with at least a symbol, upper and lower case letters and a number"});
     const user = await Account.findOne({ email: req.body.email })
     if (user) return res.status(202).json({success:false,message:"email already exist"});
     const salt = await bcrypt.genSalt(10);
