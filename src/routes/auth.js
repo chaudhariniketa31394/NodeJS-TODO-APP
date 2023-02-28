@@ -25,7 +25,7 @@ router.get("/register", function (req, res) {
 });
 
 
-router.post("/register", validateRegister(), async function (req, res) {
+router.post("/register", async function (req, res) {
    try {
    // const hash = await bcrypt.hash(req.body.password, 10) /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/
     if(!req.body.email) return res.status(404).json({success:false,message:"email required"});
