@@ -11,7 +11,8 @@ console.log("ssssssssinside auth route")
 // route for when user logs out, session is destroyed and user redirected to login
 router.get("/logout", function (req, res) {
   req.session.destroy();
-  res.redirect("/login");
+  return res.status(200).json({success:true,message:"not able to set session"});
+  //res.redirect("/login");
 });
 
 // route for when user views register page
@@ -44,7 +45,7 @@ router.post("/register", validateRegister(), async function (req, res) {
     await sendMail({OTP:doc.otp, to: doc.email, subject:"OTP For Login"}).catch((error) =>{ return res.status(500).json({  success: false,
       message: 'Something went wrong'})})
     req.login(doc.email,function(err,result) {
-      if (err) return res.status(400).send("not able to set session");;
+      if (err) return res.status(400).send("not able to set session");
       req.session.user = req.body.email
       return res.status(201).json({
         success:true,
