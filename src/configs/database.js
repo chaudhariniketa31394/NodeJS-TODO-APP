@@ -19,8 +19,11 @@ const getMailConfig = {
     
   }
 
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-module.exports = {config,JWT_SECRETE,getMailConfig}
+  const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+
+module.exports = {config,JWT_SECRETE,getMailConfig,emailRegex,passwordRegex}
 // DB_USER=todo-api
 // DB_PWD=hZkweFmNN2Lq1cJD
 // DB_HOST=cluster0.lwtdotm.mongodb.net

@@ -11,6 +11,7 @@ let Todo = require("../models/todo");
 
 
 router.post('/todo',async function (req, res) {
+    
     if(!req.body.todo) return res.status(404).json({success:false,message:"todo name required"});
     if(!req.body.status) return res.status(404).json({success:false,message:"todo status required"});
     if(!req.body.date) return res.status(404).json({success:false,message:"todo date required"});
